@@ -24,7 +24,7 @@ import org.w3c.dom.Text;
 import edu.rosehulman.me435.NavUtils;
 import edu.rosehulman.me435.RobotActivity;
 
-public class GolfBallDeliveryActivity extends RobotActivity {
+public class GolfBallDeliveryActivity extends ImageRecActivity {
 
 	/** Constant used with logging that you'll see later. */
 	public static final String TAG = "GolfBallDelivery";
@@ -86,7 +86,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
 
     private TextView mJumboXTextView, mJumboYTextView;
 
-    protected ViewFlipper mViewFlipper;
+
     protected LinearLayout mJuboTronLinearLayout;
     // ---------------------- End of UI References ----------------------
 
@@ -156,7 +156,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_main);
 
 //        setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -176,7 +176,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
         mJumboGoOrMissionCompleteButton = (Button) findViewById(R.id.jumbo_go_or_mission_complete_button);
         mJuboTronLinearLayout = (LinearLayout) findViewById(R.id.jumbo_linear_layout);
 
-        mViewFlipper = (ViewFlipper) findViewById(R.id.my_view_flipper);
+
 
         // When you start using the real hardware you don't need test buttons.
         boolean hideFakeGpsButtons = false;
@@ -210,6 +210,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
                 mGoOrMissionCompleteButton.setBackgroundResource(R.drawable.green_button);
                 mGoOrMissionCompleteButton.setText("Go!");
                 sendWheelSpeed(0,0);
+                mViewFlipper.setDisplayedChild(0);
                 break;
             case NEAR_BALL_SCRIPT:
                 mGpsInfoTextView.setText("---");

@@ -1,0 +1,7 @@
+#Internal package file, do not edit.
+#Sat May 05 19:42:34 EDT 2018
+0.baseType=DIRECTORY
+0.base=C\:\\Users\\wanz\\Documents\\GitHub\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
+0.path=classes.dex
+0.set=DEX
+count=1
