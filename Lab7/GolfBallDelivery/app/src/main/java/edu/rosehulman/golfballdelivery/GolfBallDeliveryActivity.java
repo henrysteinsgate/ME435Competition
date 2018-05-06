@@ -18,6 +18,8 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import edu.rosehulman.me435.FieldGps;
 import edu.rosehulman.me435.NavUtils;
 import edu.rosehulman.me435.RobotActivity;
@@ -83,7 +85,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
      * TextViews that can change values.
      */
     private TextView mCurrentStateTextView, mStateTimeTextView, mGpsInfoTextView, mSensorOrientationTextView,
-            mGuessXYTextView, mLeftDutyCycleTextView, mRightDutyCycleTextView, mMatchTimeTextView;
+            mGuessXYTextView, mLeftDutyCycleTextView, mRightDutyCycleTextView, mMatchTimeTextView, mAccuracyTextView;
     
     // ---------------------- End of UI References ----------------------
 
@@ -134,7 +136,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
 	/**
      * Multiplier used during seeking to calculate a PWM value based on the turn amount needed.
      */
-    private static final double SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER = 3.0;  // units are (PWM value)/degrees
+    private static final double SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER = 6.0;  // units are (PWM value)/degrees
 
     /**
      * Variable used to cap the slowest PWM duty cycle used while seeking. Pick a value from -255 to 255.
@@ -144,7 +146,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
     /**
      * PWM duty cycle values used with the drive straight dialog that make your robot drive straightest.
      */
-    public int mLeftStraightPwmValue = 255, mRightStraightPwmValue = 255;
+    public int mLeftStraightPwmValue = 200, mRightStraightPwmValue = 200;
 	// ------------------------ End of Driving area ------------------------------
 
 
@@ -205,6 +207,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
         mRightDutyCycleTextView = (TextView) findViewById(R.id.right_duty_cycle_textview);
         mMatchTimeTextView = (TextView) findViewById(R.id.match_time_textview);
         mGoOrMissionCompleteButton = (Button) findViewById(R.id.go_or_mission_complete_button);
+        mAccuracyTextView = (TextView) findViewById(R.id.textView_accuracy);
 
         // When you start using the real hardware you don't need test buttons.
         boolean hideFakeGpsButtons = false;
@@ -333,7 +336,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
             }
         }
         mMatchTimeTextView.setText(getString(R.string.time_format, timeRemainingSeconds / 60, timeRemainingSeconds % 60));
-
+        mAccuracyTextView.setText("" + (int)mAccuracy);
         switch (mState) {
             case DRIVE_TOWARDS_FAR_BALL:
                 // TODO i was here
@@ -387,14 +390,20 @@ public class GolfBallDeliveryActivity extends RobotActivity {
         double leftTurnAmount = NavUtils.getLeftTurnHeadingDelta(mCurrentSensorHeading, targetHeading);
         double rightTurnAmount = NavUtils.getRightTurnHeadingDelta(mCurrentSensorHeading, targetHeading);
         if (leftTurnAmount < rightTurnAmount) {
-            leftDutyCycle = mLeftStraightPwmValue - (int)(leftTurnAmount * SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER);
-            leftDutyCycle = Math.max(leftDutyCycle, LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE);
+//            leftDutyCycle = mLeftStraightPwmValue - (int)(leftTurnAmount * SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER);
+//            leftDutyCycle = Math.max(leftDutyCycle, LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE);
+            leftDutyCycle = mLeftDutyCycle - (int)leftTurnAmount/180 * (mLeftStraightPwmValue - 100);
         } else {
-            rightDutyCycle = mRightStraightPwmValue - (int)(rightTurnAmount * SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER);
-            rightDutyCycle = Math.max(rightDutyCycle, LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE);
+//            rightDutyCycle = mRightStraightPwmValue - (int)(rightTurnAmount * SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER);
+//            rightDutyCycle = Math.max(rightDutyCycle, LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE);
+            rightDutyCycle = mRightDutyCycle - (int)rightTurnAmount/180 * (mRightStraightPwmValue - 100);
         }
         sendWheelSpeed(leftDutyCycle, rightDutyCycle);
 
+    }
+
+    private int changeByPercent(int input){
+        return input/180 * (255 - 100);
     }
 
 
