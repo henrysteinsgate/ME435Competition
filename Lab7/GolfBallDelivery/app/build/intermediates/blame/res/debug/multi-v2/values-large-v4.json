@@ -1,29 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\wanz\\Documents\\GitHub\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-large-v4\\values-large-v4.xml",
+            "outputFile": "C:\\Users\\wangh6\\Google Drive\\ME 435\\Henry\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-large-v4\\values-large-v4.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\wanz\\Documents\\GitHub\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\src\\main\\res\\values-large\\styles.xml",
-                    "from": {
-                        "startLines": "2,11,22,34,27,15",
-                        "startColumns": "4,4,4,4,4,4",
-                        "startOffsets": "17,341,812,1281,996,502",
-                        "endLines": "8,13,25,37,32,20",
-                        "endColumns": "12,12,12,12,12,12",
-                        "endOffsets": "303,496,990,1449,1275,806"
-                    },
-                    "to": {
-                        "startLines": "9,16,21,25,29,35",
-                        "startColumns": "4,4,4,4,4,4",
-                        "startOffsets": "532,823,1203,1386,1559,1843",
-                        "endLines": "15,18,24,28,34,40",
-                        "endColumns": "12,12,12,12,12,12",
-                        "endOffsets": "818,978,1381,1554,1838,2147"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\wanz\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.0.0.aar\\1cdd286ede7b850abc3773e0bfd67829\\res\\values-large-v4\\values-large-v4.xml",
+                    "source": "C:\\Users\\wangh6\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.0.0.aar\\cb7e95461f7775d4a1e3310c901fb998\\res\\values-large-v4\\values-large-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10",
                         "startColumns": "4,4,4,4,4,4,4,4,4",
@@ -37,6 +18,25 @@
                         "startOffsets": "55,114,185,256,326,396,464,983,1087",
                         "endColumns": "58,70,70,69,69,67,67,103,115",
                         "endOffsets": "109,180,251,321,391,459,527,1082,1198"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\wangh6\\Google Drive\\ME 435\\Henry\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\src\\main\\res\\values-large\\styles.xml",
+                    "from": {
+                        "startLines": "2,11,22,34,27,15",
+                        "startColumns": "4,4,4,4,4,4",
+                        "startOffsets": "19,352,834,1315,1023,517",
+                        "endLines": "8,13,25,37,32,20",
+                        "endColumns": "12,12,12,12,12,12",
+                        "endOffsets": "311,509,1015,1486,1307,826"
+                    },
+                    "to": {
+                        "startLines": "9,16,21,25,29,35",
+                        "startColumns": "4,4,4,4,4,4",
+                        "startOffsets": "532,823,1203,1386,1559,1843",
+                        "endLines": "15,18,24,28,34,40",
+                        "endColumns": "12,12,12,12,12,12",
+                        "endOffsets": "818,978,1381,1554,1838,2147"
                     }
                 }
             ]

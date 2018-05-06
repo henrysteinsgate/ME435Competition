@@ -1,20 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\wanz\\Documents\\GitHub\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v24\\values-v24.xml",
+            "outputFile": "C:\\Users\\wangh6\\Google Drive\\ME 435\\Henry\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v24\\values-v24.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\wanz\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.0.0.aar\\1cdd286ede7b850abc3773e0bfd67829\\res\\values-v24\\values-v24.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7",
-                        "startColumns": "4,4,4,4,4,4",
-                        "startOffsets": "55,212,347,416,480,549",
-                        "endColumns": "156,134,68,63,68,69",
-                        "endOffsets": "207,342,411,475,544,614"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\wanz\\.gradle\\caches\\transforms-1\\files-1.1\\support-media-compat-26.0.0.aar\\cef4fd4d6d75959bf6fd127447f1b71d\\res\\values-v24\\values-v24.xml",
+                    "source": "C:\\Users\\wangh6\\.gradle\\caches\\transforms-1\\files-1.1\\support-media-compat-26.0.0.aar\\a5f0a5aaa05dc069fbc75b661e06ace4\\res\\values-v24\\values-v24.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",
@@ -28,6 +18,16 @@
                         "startOffsets": "619,685,746,812",
                         "endColumns": "65,60,65,66",
                         "endOffsets": "680,741,807,874"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\wangh6\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.0.0.aar\\cb7e95461f7775d4a1e3310c901fb998\\res\\values-v24\\values-v24.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7",
+                        "startColumns": "4,4,4,4,4,4",
+                        "startOffsets": "55,212,347,416,480,549",
+                        "endColumns": "156,134,68,63,68,69",
+                        "endOffsets": "207,342,411,475,544,614"
                     }
                 }
             ]

@@ -26,8 +26,8 @@ import edu.rosehulman.me435.RobotActivity;
 
 public class GolfBallDeliveryActivity extends RobotActivity {
 
-	/** Constant used with logging that you'll see later. */
-	public static final String TAG = "GolfBallDelivery";
+    /** Constant used with logging that you'll see later. */
+    public static final String TAG = "GolfBallDelivery";
     private double mAccuracy;
 
 
@@ -86,11 +86,11 @@ public class GolfBallDeliveryActivity extends RobotActivity {
      */
     private TextView mCurrentStateTextView, mStateTimeTextView, mGpsInfoTextView, mSensorOrientationTextView,
             mGuessXYTextView, mLeftDutyCycleTextView, mRightDutyCycleTextView, mMatchTimeTextView, mAccuracyTextView;
-    
+
     // ---------------------- End of UI References ----------------------
 
-	
-	// ---------------------- Mission strategy values ----------------------
+
+    // ---------------------- Mission strategy values ----------------------
     /** Constants for the known locations. */
     public static final long NEAR_BALL_GPS_X = 90;
     public static final long FAR_BALL_GPS_X = 240;
@@ -106,10 +106,10 @@ public class GolfBallDeliveryActivity extends RobotActivity {
      */
     public int mNearBallLocation, mFarBallLocation, mWhiteBallLocation;
     // ----------------- End of mission strategy values ----------------------
-	
-	
+
+
     // ---------------------------- Timing area ------------------------------
-	/**
+    /**
      * Time when the state began (saved as the number of millisecond since epoch).
      */
     private long mStateStartTime;
@@ -123,31 +123,31 @@ public class GolfBallDeliveryActivity extends RobotActivity {
      * Constant that holds the maximum length of the match (saved in milliseconds).
      */
     private long MATCH_LENGTH_MS = 300000; // 5 minutes in milliseconds (5 * 60 * 1000)
-	// ----------------------- End of timing area --------------------------------
-	
-	
+    // ----------------------- End of timing area --------------------------------
+
+
     // ---------------------------- Driving area ---------------------------------
-	/**
+    /**
      * When driving towards a target, using a seek strategy, consider that state a success when the
      * GPS distance to the target is less than (or equal to) this value.
      */
     public static final double ACCEPTED_DISTANCE_AWAY_FT = 10.0; // Within 10 feet is close enough.
-	
-	/**
+
+    /**
      * Multiplier used during seeking to calculate a PWM value based on the turn amount needed.
      */
     private static final double SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER = 6.0;  // units are (PWM value)/degrees
 
     /**
      * Variable used to cap the slowest PWM duty cycle used while seeking. Pick a value from -255 to 255.
-    */
+     */
     private static final int LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE = 150;
 
     /**
      * PWM duty cycle values used with the drive straight dialog that make your robot drive straightest.
      */
     public int mLeftStraightPwmValue = 200, mRightStraightPwmValue = 200;
-	// ------------------------ End of Driving area ------------------------------
+    // ------------------------ End of Driving area ------------------------------
 
 
     //------------------------- Start of Lab6BallSorterCode ----------------------
@@ -287,6 +287,9 @@ public class GolfBallDeliveryActivity extends RobotActivity {
                 sendWheelSpeed(0,0);
                 break;
 
+            case LAB7:
+
+                break;
         }
         mState = newState;
     }
@@ -338,28 +341,28 @@ public class GolfBallDeliveryActivity extends RobotActivity {
         mMatchTimeTextView.setText(getString(R.string.time_format, timeRemainingSeconds / 60, timeRemainingSeconds % 60));
         mAccuracyTextView.setText("" + (int)mAccuracy);
         switch (mState) {
-            case DRIVE_TOWARDS_FAR_BALL:
-                // TODO i was here
-                seekTargetAt(FAR_BALL_GPS_X,mFarBallGpsY);
-                break;
-            case DRIVE_TOWARDS_HOME:
-                seekTargetAt(0,0);
-                break;
-            case WAITING_FOR_PICKUP:
-                if (getStateTimeMs() > 8000) {
-                    setState(State.SEEKING_HOME);
-                }
-                break;
-            case SEEKING_HOME:
-                seekTargetAt(0,0);
-                if (getStateTimeMs() > 8000) {
-                    setState(State.WAITING_FOR_PICKUP);
-                }
-                break;
+//            case DRIVE_TOWARDS_FAR_BALL:
+//                // TODO i was here
+//                seekTargetAt(FAR_BALL_GPS_X,mFarBallGpsY);
+//                break;
+//            case DRIVE_TOWARDS_HOME:
+//                seekTargetAt(0,0);
+//                break;
+//            case WAITING_FOR_PICKUP:
+//                if (getStateTimeMs() > 8000) {
+//                    setState(State.SEEKING_HOME);
+//                }
+//                break;
+//            case SEEKING_HOME:
+//                seekTargetAt(0,0);
+//                if (getStateTimeMs() > 8000) {
+//                    setState(State.WAITING_FOR_PICKUP);
+//                }
+//                break;
             case LAB7:
-                if(minDistance(90,50,mGuessX,mGuessY) > 5) {
+                if(minDistance(90,50,mGuessX,mGuessY) > 8) {
                     seekTargetAt(90, 50);
-                } else {
+                }else {
                     setState(State.DROPBALL);
                     Toast.makeText(this,"You got it", Toast.LENGTH_SHORT).show();
                 }
@@ -390,13 +393,13 @@ public class GolfBallDeliveryActivity extends RobotActivity {
         double leftTurnAmount = NavUtils.getLeftTurnHeadingDelta(mCurrentSensorHeading, targetHeading);
         double rightTurnAmount = NavUtils.getRightTurnHeadingDelta(mCurrentSensorHeading, targetHeading);
         if (leftTurnAmount < rightTurnAmount) {
-//            leftDutyCycle = mLeftStraightPwmValue - (int)(leftTurnAmount * SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER);
-//            leftDutyCycle = Math.max(leftDutyCycle, LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE);
-            leftDutyCycle = mLeftDutyCycle - (int)leftTurnAmount/180 * (mLeftStraightPwmValue - 100);
+            leftDutyCycle = mLeftStraightPwmValue - (int)(leftTurnAmount * SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER);
+            leftDutyCycle = Math.max(leftDutyCycle, LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE);
+//            leftDutyCycle = mLeftDutyCycle - (int)leftTurnAmount/180 * (leftDutyCycle - 100);
         } else {
-//            rightDutyCycle = mRightStraightPwmValue - (int)(rightTurnAmount * SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER);
-//            rightDutyCycle = Math.max(rightDutyCycle, LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE);
-            rightDutyCycle = mRightDutyCycle - (int)rightTurnAmount/180 * (mRightStraightPwmValue - 100);
+            rightDutyCycle = mRightStraightPwmValue - (int)(rightTurnAmount * SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER);
+            rightDutyCycle = Math.max(rightDutyCycle, LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE);
+//            rightDutyCycle = mRightDutyCycle - (int)rightTurnAmount/180 * (rightDutyCycle - 100);
         }
         sendWheelSpeed(leftDutyCycle, rightDutyCycle);
 
@@ -432,6 +435,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
         mGpsInfoTextView.setText(gpsInfo);
         mAccuracy=location.getAccuracy() * FieldGps.FEET_PER_METER;
 
+
 //        if (mState == State.DRIVE_TOWARDS_FAR_BALL) {
 //            double distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY,
 //                    FAR_BALL_GPS_X, mFarBallGpsY);
@@ -465,18 +469,18 @@ public class GolfBallDeliveryActivity extends RobotActivity {
     private void handleBallClickForLocation(final int location) {
         AlertDialog.Builder builder = new AlertDialog.Builder(GolfBallDeliveryActivity.this);
         builder.setTitle("What was the real color?").setItems(R.array.ball_colors,
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    GolfBallDeliveryActivity.this.setLocationToColor(location, BallColor.values()[which]);
-                    if(location == 1){
-                        GolfBallDeliveryActivity.this.loc1 = GolfBallDeliveryActivity.returnColor(BallColor.values()[which]);
-                    } else if(location == 2){
-                        GolfBallDeliveryActivity.this.loc2 = GolfBallDeliveryActivity.returnColor(BallColor.values()[which]);
-                    } else if(location == 3) {
-                        GolfBallDeliveryActivity.this.loc3 = GolfBallDeliveryActivity.returnColor(BallColor.values()[which]);
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        GolfBallDeliveryActivity.this.setLocationToColor(location, BallColor.values()[which]);
+                        if(location == 1){
+                            GolfBallDeliveryActivity.this.loc1 = GolfBallDeliveryActivity.returnColor(BallColor.values()[which]);
+                        } else if(location == 2){
+                            GolfBallDeliveryActivity.this.loc2 = GolfBallDeliveryActivity.returnColor(BallColor.values()[which]);
+                        } else if(location == 3) {
+                            GolfBallDeliveryActivity.this.loc3 = GolfBallDeliveryActivity.returnColor(BallColor.values()[which]);
+                        }
                     }
-                }
-            });
+                });
         builder.create().show();
 
         // DONE: Fix this later so that you can manually change the ball color
@@ -744,7 +748,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
             if (currentLocationsBallColor == BallColor.WHITE) {
                 mWhiteBallLocation = i + 1;
             }
-     // TODO: In your project you’ll add more code to calculate the values below correctly!
+            // TODO: In your project you’ll add more code to calculate the values below correctly!
         }
 
         Log.d(TAG, "Near ball position: " + mNearBallLocation + " drop off at y = " + mNearBallGpsY);

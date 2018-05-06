@@ -1,7 +1,11 @@
 #Internal package file, do not edit.
-#Sat May 05 19:42:34 EDT 2018
+#Sat May 05 23:50:35 EDT 2018
+1.base=C\:\\Users\\wangh6\\Google Drive\\ME 435\\Henry\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\11
 0.baseType=DIRECTORY
-0.base=C\:\\Users\\wanz\\Documents\\GitHub\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
+1.baseType=DIRECTORY
+count=2
+1.set=DEX
 0.path=classes.dex
 0.set=DEX
-count=1
+0.base=C\:\\Users\\wangh6\\Google Drive\\ME 435\\Henry\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\12
+1.path=classes.dex
