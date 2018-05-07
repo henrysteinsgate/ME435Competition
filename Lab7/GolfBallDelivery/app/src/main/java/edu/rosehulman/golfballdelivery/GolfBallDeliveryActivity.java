@@ -31,6 +31,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
     private double mAccuracy;
 
 
+
     public enum State {
         READY_FOR_MISSION,
         NEAR_BALL_SCRIPT,
@@ -136,17 +137,17 @@ public class GolfBallDeliveryActivity extends RobotActivity {
     /**
      * Multiplier used during seeking to calculate a PWM value based on the turn amount needed.
      */
-    private static final double SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER = 6.0;  // units are (PWM value)/degrees
+    private static final double SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER = 0.8;  // units are (PWM value)/degrees
 
     /**
      * Variable used to cap the slowest PWM duty cycle used while seeking. Pick a value from -255 to 255.
      */
-    private static final int LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE = 150;
+    private static final int LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE = 100;
 
     /**
      * PWM duty cycle values used with the drive straight dialog that make your robot drive straightest.
      */
-    public int mLeftStraightPwmValue = 200, mRightStraightPwmValue = 200;
+    public int mLeftStraightPwmValue = 150, mRightStraightPwmValue = 150;
     // ------------------------ End of Driving area ------------------------------
 
 
@@ -360,7 +361,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
 //                }
 //                break;
             case LAB7:
-                if(minDistance(90,50,mGuessX,mGuessY) > 8) {
+                if(minDistance(90,50,mGuessX,mGuessY) > 5) {
                     seekTargetAt(90, 50);
                 }else {
                     setState(State.DROPBALL);
@@ -532,7 +533,9 @@ public class GolfBallDeliveryActivity extends RobotActivity {
      * Sends a message to Arduino to perform a ball color test.
      */
     public void handlePerformBallTest(View view) {
+        sendCommand("ATTACH 111111");
         sendCommand("p");
+        sendCommand(home);
 //        // DONE: COmment this out later
 //        Toast.makeText(this,"MESSAGE SENT", Toast.LENGTH_SHORT).show();
     }
