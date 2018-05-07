@@ -157,8 +157,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
-
-//        setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mBallImageButtons = new ImageButton[]{(ImageButton) findViewById(R.id.location_1_image_button),
                 (ImageButton) findViewById(R.id.location_2_image_button),
@@ -175,6 +173,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         mGoOrMissionCompleteButton = (Button) findViewById(R.id.go_or_mission_complete_button);
         mJumboGoOrMissionCompleteButton = (Button) findViewById(R.id.jumbo_go_or_mission_complete_button);
         mJuboTronLinearLayout = (LinearLayout) findViewById(R.id.jumbo_linear_layout);
+
 
 
 
@@ -284,6 +283,20 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             }
         }
         mMatchTimeTextView.setText(getString(R.string.time_format, timeRemainingSeconds / 60,timeRemainingSeconds % 60));
+
+        if(mConeFound) {
+            mJuboTronLinearLayout.setBackgroundColor(Color.parseColor("#ff8000"));
+            if(mConeLeftRightLocation < 0) {
+                Log.d(TAG, "Turn left some amount.");
+
+            }
+            if(mConeSize > 0.1) {
+                Log.d(TAG,"Might want to stop. The cone is pretty huge");
+
+            }
+        } else {
+            mJuboTronLinearLayout.setBackgroundColor(Color.GREEN);
+        }
 
         switch (mState) {
             case READY_FOR_MISSION:
