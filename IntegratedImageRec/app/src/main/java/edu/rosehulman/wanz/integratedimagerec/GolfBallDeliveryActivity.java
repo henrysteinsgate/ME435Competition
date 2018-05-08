@@ -209,7 +209,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 mGoOrMissionCompleteButton.setBackgroundResource(R.drawable.green_button);
                 mGoOrMissionCompleteButton.setText("Go!");
                 sendWheelSpeed(0,0);
-                mViewFlipper.setDisplayedChild(0);
+
                 break;
             case NEAR_BALL_SCRIPT:
                 mGpsInfoTextView.setText("---");
@@ -585,9 +585,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             mGoOrMissionCompleteButton.setText("Mission Complete!");
             mJumboGoOrMissionCompleteButton.setBackgroundResource(R.drawable.red_button);
             mJumboGoOrMissionCompleteButton.setText("Stope!");
+
             setState(State.NEAR_BALL_SCRIPT);
         } else {
             setState(State.READY_FOR_MISSION);
+            mViewFlipper.setDisplayedChild(0);
         }
 
     }

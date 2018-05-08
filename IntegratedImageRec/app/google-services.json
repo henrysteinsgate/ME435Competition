@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "242912052804",
+    "firebase_url": "https://me435-in-class-s18-bdb3f.firebaseio.com",
+    "project_id": "me435-in-class-s18-bdb3f",
+    "storage_bucket": "me435-in-class-s18-bdb3f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242912052804:android:c1fbbf0535090880",
+        "android_client_info": {
+          "package_name": "edu.rosehulman.wanz.integratedimagerec"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "242912052804-h1ks6pgopafaica9vml4ddu485l23p97.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.rosehulman.wanz.integratedimagerec",
+            "certificate_hash": "1efce26132c03e18c5280c15fc437c762bc6ad55"
+          }
+        },
+        {
+          "client_id": "242912052804-cl289enfgnlvjp4egoqmgnimc5vjuds0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByVTjZuMuKRB304sJ2J5ysYJmXv7e67C0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "242912052804-cl289enfgnlvjp4egoqmgnimc5vjuds0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
