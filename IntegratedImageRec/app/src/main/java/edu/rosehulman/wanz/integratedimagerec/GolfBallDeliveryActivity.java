@@ -32,6 +32,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private long mFirebaseUpdateCounter = 0;
     private double mAccuracy;
     private TextView mAccuracyTextView;
+    private int mStateCount = 0;
 
     public enum State{
         READY_FOR_MISSION,
@@ -388,6 +389,12 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             case READY_FOR_MISSION:
                 break;
             case NEAR_BALL_SCRIPT:
+                if(minDistance(NEAR_BALL_GPS_X,mNearBallGpsY,mGuessX,mGuessY) > 3) {
+                    seekTargetAt(NEAR_BALL_GPS_X, mNearBallGpsY);
+                }else {
+                    setState(State.CAMERA_APPROACH);
+                    Toast.makeText(this,"You got it close", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case DRIVE_TOWARDS_FAR_BALL:
 
@@ -409,12 +416,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 }
                 break;
             case GPS_APPROACH:
-                if(minDistance(90,50,mGuessX,mGuessY) > 3) {
-                    seekTargetAt(90, 50);
-                }else {
-                    setState(State.CAMERA_APPROACH);
-                    Toast.makeText(this,"You got it close", Toast.LENGTH_SHORT).show();
-                }
                 break;
             case CAMERA_APPROACH:
                 if(mConeSize < CONE_SIZE_GOAL){
@@ -427,6 +428,12 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
                 if(getStateTimeMs() > 5000){
                     sendCommand(oneOff);
+                    mStateCount++;
+                    if(mStateCount == 1){
+                        setState(State.FAR_BALL_SCRIPT);
+                    } if(mStateCount == 2){
+                        setState(State.SEEKING_HOME);
+                    }
                 }
 
                 break;
@@ -447,11 +454,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         int rightDutyCycle = mRightStraightPwmValue;
         if(mConeLeftRightLocation> 0.1){
 //            rightDutyCycle = (int)(mRightStraightPwmValue * (1 - mConeLeftRightLocation));
-            leftDutyCycle = (int)(mLeftStraightPwmValue - Math.abs(mConeLeftRightLocation) * CONE_CAMERA_MULTIPLIER);
+            rightDutyCycle = (int)(mRightStraightPwmValue - Math.abs(mConeLeftRightLocation) * CONE_CAMERA_MULTIPLIER);
 
         }else if(mConeLeftRightLocation < -0.1){
 //            leftDutyCycle = (int)(mLeftStraightPwmValue * (1 + mConeLeftRightLocation));
-            rightDutyCycle = (int)(mRightStraightPwmValue - mConeLeftRightLocation * CONE_CAMERA_MULTIPLIER);
+            leftDutyCycle = (int)(mLeftStraightPwmValue - Math.abs(mConeLeftRightLocation) * CONE_CAMERA_MULTIPLIER);
         }else {
 
         }
@@ -756,7 +763,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     public void handleFakeGpsF2(View view) {
 //        Toast.makeText(this, "TODO: Implement handleFakeGpsF2", Toast.LENGTH_SHORT).show();
 //        onLocationChanged(231, 50, 135, null); // Within range
-        sendMessage("hahahahaha I did not follow the course code");
+//        sendMessage("hahahahaha I did not follow the course code");
     }
 
     public void handleFakeGpsF3(View view) {
@@ -766,7 +773,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
     public void handleFakeGpsH0(View view) {
 //        Toast.makeText(this, "TODO: Implement handleFakeGpsH0", Toast.LENGTH_SHORT).show();
-        onLocationChanged(165, 0, -179.9, null);
+//        onLocationChanged(165, 0, -179.9, null);
     }
 
     public void handleFakeGpsH1(View view) {
@@ -776,7 +783,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
     public void handleFakeGpsH2(View view) {
 //        Toast.makeText(this, "TODO: Implement handleFakeGpsH2", Toast.LENGTH_SHORT).show();
-        onLocationChanged(9, 0, -170, null);
+//        onLocationChanged(9, 0, -170, null);
     }
 
     public void handleFakeGpsH3(View view) {
@@ -799,15 +806,15 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     public void handleGoOrMissionComplete(View view) {
         if (mState == State.READY_FOR_MISSION) {
             mMatchStartTime = System.currentTimeMillis();
-//            updateMissionStrategyVariable();
+            updateMissionStrategyVariable();
             mGoOrMissionCompleteButton.setBackgroundResource(R.drawable.red_button);
             mGoOrMissionCompleteButton.setText("Mission Complete!");
             mJumboGoOrMissionCompleteButton.setBackgroundResource(R.drawable.red_button);
             mJumboGoOrMissionCompleteButton.setText("Stop!");
 
             // TODO: change this later for the actual match
-//            setState(State.NEAR_BALL_SCRIPT);
-            setState(State.GPS_APPROACH);
+            setState(State.NEAR_BALL_SCRIPT);
+//            setState(State.GPS_APPROACH);
         } else {
             setState(State.READY_FOR_MISSION);
             mViewFlipper.setDisplayedChild(0);
@@ -816,17 +823,25 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     }
 
     private void updateMissionStrategyVariable() {
-        mNearBallGpsY = -50.0; // Note, X value is a constant so no need to figure it out.
-        mFarBallGpsY = 50.0; // Note, X value is a constant so no need to figure it out.
-        mNearBallLocation = 1;
-        mWhiteBallLocation = 0; // Assume there is no white ball present for now (update later).
-        mFarBallLocation = 3;
-
-        // Example of doing real planning.
         for (int i = 0; i < 3; i++) {
             BallColor currentLocationsBallColor = mLocationColors[i];
             if (currentLocationsBallColor == BallColor.WHITE) {
                 mWhiteBallLocation = i + 1;
+            }
+            if(currentLocationsBallColor == BallColor.BLUE){
+                mFarBallLocation = i + 1;
+                mFarBallGpsY = 50;
+            } else if (currentLocationsBallColor == BallColor.YELLOW){
+                mFarBallLocation = i + 1;
+                mFarBallGpsY = -50;
+            }
+
+            if(currentLocationsBallColor == BallColor.GREEN){
+                mNearBallLocation = i + 1;
+                mNearBallGpsY = 50;
+            } else if (currentLocationsBallColor == BallColor.RED){
+                mNearBallLocation = i + 1;
+                mNearBallGpsY = -50;
             }
 // TODO: In your project you’ll add more code to calculate the values below correctly!
         }
