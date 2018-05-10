@@ -304,10 +304,8 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="186dp"
-        android:layout_marginEnd="151dp"
+        android:layout_alignStart="@+id/state_label"
+        android:layout_below="@+id/guess_location_label"
         android:text="Accuracy:"
         android:textColor="@android:color/background_light" />
 
@@ -315,8 +313,8 @@
         android:id="@+id/textView_accuracy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/imageButton1"
-        android:layout_alignTop="@+id/textView"
+        android:layout_alignStart="@+id/current_state_textview"
+        android:layout_below="@+id/guess_location_label"
         android:text="---"
         android:textColor="@android:color/background_light" />
 

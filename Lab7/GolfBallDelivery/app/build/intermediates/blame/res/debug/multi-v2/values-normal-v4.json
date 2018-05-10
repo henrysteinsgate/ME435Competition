@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\wangh6\\Google Drive\\ME 435\\Henry\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-normal-v4\\values-normal-v4.xml",
+            "outputFile": "C:\\Users\\wanz\\Documents\\GitHub\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-normal-v4\\values-normal-v4.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\wangh6\\Google Drive\\ME 435\\Henry\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\src\\main\\res\\values-normal\\styles.xml",
+                    "source": "C:\\Users\\wanz\\Documents\\GitHub\\ME435Competition\\Lab7\\GolfBallDelivery\\app\\src\\main\\res\\values-normal\\styles.xml",
                     "from": {
                         "startLines": "2,11,22,34,27,15",
                         "startColumns": "4,4,4,4,4,4",

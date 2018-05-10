@@ -426,6 +426,7 @@ public class GolfBallDeliveryActivity extends RobotActivity {
     @Override
     public void onLocationChanged(double x, double y, double heading, Location location) {
         super.onLocationChanged(x, y, heading, location);
+
         String gpsInfo = getString(R.string.xy_format, mCurrentGpsX, mCurrentGpsY);
         if (mCurrentGpsHeading != NO_HEADING) {
             gpsInfo += " " + getString(R.string.degrees_format, mCurrentGpsHeading);
