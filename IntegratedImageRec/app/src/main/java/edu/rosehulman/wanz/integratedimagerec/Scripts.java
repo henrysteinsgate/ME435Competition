@@ -13,7 +13,7 @@ import edu.rosehulman.me435.RobotActivity;
 public class Scripts {
     private Handler mCommandHandler = new Handler();
     private GolfBallDeliveryActivity mActivity;
-    private int ARM_REMOVAL_TIME = 5000;
+    private int ARM_REMOVAL_TIME = 15000;
 
     public Scripts(GolfBallDeliveryActivity activity) {
         mActivity = activity;
@@ -58,7 +58,7 @@ public class Scripts {
 
     public void farBallScript() {
         mActivity.sendWheelSpeed(0, 0);
-        Toast.makeText(mActivity, "Figure out which ball(s) to remove and do it.", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mActivity, "Figure out which ball(s) to remove and do it.", Toast.LENGTH_SHORT).show();
         removeBallAtLocation(mActivity.mFarBallLocation);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
@@ -66,7 +66,7 @@ public class Scripts {
                 if (mActivity.mWhiteBallLocation != 0) {
                     removeBallAtLocation(mActivity.mWhiteBallLocation);
                 }
-                if (mActivity.mState == GolfBallDeliveryActivity.State.FAR_BALL_SCRIPT) {
+                if (mActivity.mState == GolfBallDeliveryActivity.State.DROPBALL && mActivity.mStateCount == 2) {
                     mActivity.setState(GolfBallDeliveryActivity.State.DRIVE_TOWARDS_HOME);
                 }
             }
