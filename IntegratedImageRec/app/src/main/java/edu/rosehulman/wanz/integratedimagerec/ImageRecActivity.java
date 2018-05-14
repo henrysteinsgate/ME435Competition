@@ -81,7 +81,7 @@ public class ImageRecActivity extends RobotActivity implements CameraBridgeViewB
     protected int mConeRangeV = 50;
 
     /** Minimum size needed to consider the target a cone. (change as needed) */
-    private static final double MIN_SIZE_PERCENTAGE = 0.001;
+    private static final double MIN_SIZE_PERCENTAGE = 0.0005;
 
     /** Screen size variables. */
     private double mCameraViewWidth;

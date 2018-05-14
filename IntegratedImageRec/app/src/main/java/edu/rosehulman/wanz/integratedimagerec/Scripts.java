@@ -116,7 +116,7 @@ public class Scripts {
             mCommandHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mActivity.sendCommand(mActivity.twoOff);
+                    mActivity.sendCommand(mActivity.twoThree);
                     mActivity.mFirebaseRef.child("Ball Status").setValue("2 -- 3");
                 }
             }, 10);
@@ -146,7 +146,7 @@ public class Scripts {
             mCommandHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mActivity.sendCommand(mActivity.twoOff);
+                    mActivity.sendCommand(mActivity.twoThree);
                     mActivity.mFirebaseRef.child("Ball Status").setValue("2 -- 3");
                 }
             }, 10);
