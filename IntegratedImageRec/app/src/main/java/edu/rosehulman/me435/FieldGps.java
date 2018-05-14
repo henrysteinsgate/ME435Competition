@@ -33,9 +33,9 @@ public class FieldGps implements LocationListener {
   private static final int LOCATION_REQUEST = 0;
 
   /** GPS will give updates no faster than this. */
-  private static final long DEFAULT_MIN_TIME_MS = 1000;  // 1 second
+  private static final long DEFAULT_MIN_TIME_MS = 500;  // 1 second
   /** GPS will give updates if the moved is greater than this. */
-  private static final float DEFAULT_MIN_DISTANCE = 0.1f;  // 10 cm 
+  private static final float DEFAULT_MIN_DISTANCE = 0.05f;  // 10 cm
   /** Value returned for the heading if no bearing is available. */
   public static final double NO_BEARING_AVAILABLE = Double.NaN; 
   /** Value returned for the accuracy if no accuracy is available. */

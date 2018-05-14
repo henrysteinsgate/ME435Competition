@@ -28,7 +28,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      * Constant used with logging that you'll see later.
      */
     public static final String TAG = "GolfBallDelivery";
-    private static final double CONE_SIZE_GOAL = 0.1;
+    private static final double CONE_SIZE_GOAL = 0.03;
     private static final double CONE_CAMERA_MULTIPLIER = 50;
     private Button mJumboGoOrMissionCompleteButton;
     private long mFirebaseUpdateCounter = 0;
@@ -36,10 +36,21 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private TextView mAccuracyTextView;
     public int mStateCount = 0;
     public int readyForNextState = 0;
+    private double previousConeLocation = 10.0;
+    //    private double mNearBallXPositionCorrection;
+//    private double mNearBallYPositionCorrection;
+    private long startPointCorrectionX;
+    private long startPointCorrectionY;
+    private long nearBallPositionCorrectionX;
+    private long nearBallPositionCorrectionY;
+    private long farBallPositionCorrectionX;
+    private long farBallPositionCorrectionY;
+    private long endPositionCorrectionX;
+    private long endPositionCorrectionY;
 
     public enum State {
         READY_FOR_MISSION,
-        NEAR_BALL_SCRIPT,
+        NEAR_BALL_SCRIPT, Y,
         DRIVE_TOWARDS_FAR_BALL,
         FAR_BALL_SCRIPT,
         DRIVE_TOWARDS_HOME,
@@ -149,7 +160,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     /**
      * Multiplier used during seeking to calculate a PWM value based on the turn amount needed.
      */
-    private static final double SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER = 1.5;  // units are (PWM value)/degrees
+    private static final double SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER = 1.8;  // units are (PWM value)/degrees
 
     /**
      * Variable used to cap the slowest PWM duty cycle used while seeking. Pick a value from -255 to 255.
@@ -172,14 +183,13 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
     static public String home = "POSITION 0 90 0 -90 90";
 
-    static public String oneTwo = "POSITION 21 125 -90 -160 108";
-    static public String oneOff = "POSITION 45 125 -90 -160 108";
+    static public String oneTwo = "POSITION 21 134 -90 -160 108";
+    static public String oneOff = "POSITION 45 134 -90 -160 108";
+//    static public String twoThree = "POSITION -8 134 -90 -160 108";
+    static public String twoOff = "POSITION 8 134 -90 -160 108";
+    static public String threeOff = "POSITION -28 134 -90 -160 108";
+
     static public String oneRecover = "POSITION 45 90 0 -90 90";
-
-    static public String twoThree = "POSITION -8 125 -90 -160 108";
-    static public String twoOff = "POSITION 8 125 -90 -160 108";
-
-    static public String threeOff = "POSITION -28 125 -90 -160 108";
     static public String threeRecover = "POSITION -28 90 0 -90 90";
     //------------------------- End of Lab6BallSorterCode ------------------------
 
@@ -249,8 +259,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
     }
 
-
-    // TODO: GPS first, I think we need these, I will check them later
     @Override
     protected void onStart() {
         super.onStart();
@@ -299,7 +307,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     // --------------------------- Methods added ---------------------------
 
     public void setState(State newState) {
-//         TODO: comment out just for now, uncomment this when a new FSM is developed
         if (mState == State.READY_FOR_MISSION && newState != State.NEAR_BALL_SCRIPT) {
             return;
         }
@@ -321,11 +328,31 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
                 mViewFlipper.setDisplayedChild(2);
 
+                // TODO: new algorithm check if it works
+                startPointCorrectionX = (long) mGuessX;
+                startPointCorrectionY = (long) mGuessY;
+
+
                 break;
             case FAR_BALL_SCRIPT:
+                // TODO: new algorithm check if it works
+                nearBallPositionCorrectionX = (long) mGuessX;
+                nearBallPositionCorrectionY = (long) mGuessY;
+                farBallPositionCorrectionX = nearBallPositionCorrectionX + 150;
+                farBallPositionCorrectionY = nearBallPositionCorrectionY + 0;
+
+//                FAR_BALL_GPS_X = FAR_BALL_GPS_X - (90 - (long) mNearBallXPositionCorrection);
+
 //                mScripts.farBallScript();
                 break;
             case DRIVE_TOWARDS_HOME:
+
+                // TODO: new algorithm check if it works
+                farBallPositionCorrectionX = (long) mGuessX;
+                farBallPositionCorrectionY = (long) mGuessY;
+
+                endPositionCorrectionX = farBallPositionCorrectionX - 240;
+                endPositionCorrectionY += farBallPositionCorrectionY > 0 ? -50 : 50;
                 break;
             case WAITING_FOR_PICKUP:
                 sendWheelSpeed(0, 0);
@@ -335,11 +362,15 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 break;
             case DROPBALL:
                 mStateCount++;
-                sendWheelSpeed(0,0);
+                sendWheelSpeed(0, 0);
                 if (mStateCount == 1) {
+//                    mNearBallXPositionCorrection = mGuessX;
+//                    mNearBallYPositionCorrection = mGuessX;
                     mScripts.nearBallScript();
                 } else if (mStateCount == 2) {
                     mScripts.farBallScript();
+                } else if (mStateCount == 3) {
+                    setState(State.WAITING_FOR_PICKUP);
                 }
                 break;
             case GPS_APPROACH:
@@ -368,7 +399,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         }
         String matchTime = getString(R.string.time_format, timeRemainingSeconds / 60, timeRemainingSeconds % 60);
         mMatchTimeTextView.setText(getString(R.string.time_format, timeRemainingSeconds / 60, timeRemainingSeconds % 60));
-        // TODO: Once every 2 seconds (20 calls to this function) send the match and state time to Firebase
         mFirebaseUpdateCounter++;
         if (mFirebaseUpdateCounter % 20 == 0 && mState != State.READY_FOR_MISSION) {
             // Send the match time
@@ -392,29 +422,47 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         }
         mFirebaseRef.child("Cone Status").setValue(mConeFound);
         mFirebaseRef.child("Near Ball Boolean").setValue((minDistance(NEAR_BALL_GPS_X, mNearBallGpsY, mGuessX, mGuessY) > 5) && (!mConeFound));
+
+        // TODO: new algorithm has been implemented, previous chucks of code are in the comment
         switch (mState) {
             case READY_FOR_MISSION:
                 break;
             case NEAR_BALL_SCRIPT:
                 //
-                if ((minDistance(NEAR_BALL_GPS_X, mNearBallGpsY, mGuessX, mGuessY) > 5) && (!mConeFound)) {
-                    seekTargetAt(NEAR_BALL_GPS_X, mNearBallGpsY);
+//                if (minDistance(NEAR_BALL_GPS_X, mNearBallGpsY, mGuessX, mGuessY) < 30) {
+                if (minDistance(nearBallPositionCorrectionX, nearBallPositionCorrectionY, mGuessX, mGuessY) < 30) {
+                    mLeftStraightPwmValue = 200;
+                    mRightStraightPwmValue = 200;
+                }
+                if ((minDistance(nearBallPositionCorrectionX, nearBallPositionCorrectionY, mGuessX, mGuessY) > 10) && (!mConeFound)) {
+//              if ((minDistance(NEAR_BALL_GPS_X, mNearBallGpsY, mGuessX, mGuessY) > 10) && (!mConeFound)) {
+                    seekTargetAt(nearBallPositionCorrectionX, nearBallPositionCorrectionY);
+//                    seekTargetAt(NEAR_BALL_GPS_X, mNearBallGpsY);
                 } else {
                     setState(State.CAMERA_APPROACH);
                 }
                 break;
             case FAR_BALL_SCRIPT:
-                if (minDistance(FAR_BALL_GPS_X, mFarBallGpsY, mGuessX, mGuessY) > 5 && !mConeFound) {
-                    seekTargetAt(FAR_BALL_GPS_X, mFarBallGpsY);
+                if (minDistance(farBallPositionCorrectionX, farBallPositionCorrectionY, mGuessX, mGuessY) < 30) {
+//                    if (minDistance(FAR_BALL_GPS_X, mFarBallGpsY, mGuessX, mGuessY) < 30){
+                    mLeftStraightPwmValue = 200;
+                    mRightStraightPwmValue = 200;
+                }
+                if ((minDistance(farBallPositionCorrectionX, farBallPositionCorrectionY, mGuessX, mGuessY) > 10 && !mConeFound) || mGuessX < 160) {
+//                if ((minDistance(FAR_BALL_GPS_X, mFarBallGpsY, mGuessX, mGuessY) > 10 && !mConeFound) || mGuessX < 160) {
+                    seekTargetAt(farBallPositionCorrectionX, farBallPositionCorrectionY);
+//                    seekTargetAt(FAR_BALL_GPS_X, mFarBallGpsY);
                 } else {
                     setState(State.CAMERA_APPROACH);
                 }
                 break;
             case DRIVE_TOWARDS_HOME:
-                if(minDistance(0,0,mGuessX,mGuessY) > 5 && !mConeFound) {
-                    seekTargetAt(0, 0);
+                if (minDistance(endPositionCorrectionX, endPositionCorrectionY, mGuessX, mGuessY) > 10 && !mConeFound || mGuessX > 20) {
+//                    if (minDistance(0, 0, mGuessX, mGuessY) > 10 && !mConeFound || mGuessX > 20) {
+                    seekTargetAt(endPositionCorrectionX, endPositionCorrectionY);
+//                    seekTargetAt(0, 0);
                 } else {
-                    setState(State.WAITING_FOR_PICKUP);
+                    setState(State.CAMERA_APPROACH);
                 }
 
                 break;
@@ -439,11 +487,16 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 break;
             case DROPBALL:
                 if (mStateCount == 1 && readyForNextState == 1) {
+
                     setState(State.FAR_BALL_SCRIPT);
                     readyForNextState = 0;
+                    mRightStraightPwmValue = 250;
+                    mLeftStraightPwmValue = 250;
                 } else if (mStateCount == 2 && readyForNextState == 1) {
                     setState(State.DRIVE_TOWARDS_HOME);
                     readyForNextState = 0;
+                    mRightStraightPwmValue = 250;
+                    mLeftStraightPwmValue = 250;
                 }
 
 
@@ -463,18 +516,25 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private void seekConeWithCamera() {
         int leftDutyCycle = mLeftStraightPwmValue;
         int rightDutyCycle = mRightStraightPwmValue;
-        if (mConeLeftRightLocation < -0.1) {
+        if (mConeLeftRightLocation < -0.2) {
 //            rightDutyCycle = (int)(mRightStraightPwmValue * (1 - mConeLeftRightLocation));
-            rightDutyCycle = (int) (mRightStraightPwmValue - Math.abs(mConeLeftRightLocation) * CONE_CAMERA_MULTIPLIER);
+            rightDutyCycle = (int) (mRightStraightPwmValue - Math.abs(mConeLeftRightLocation) * CONE_CAMERA_MULTIPLIER * 4);
 
-        } else if (mConeLeftRightLocation > 0.1) {
+        } else if (mConeLeftRightLocation > 0.2) {
 //            leftDutyCycle = (int)(mLeftStraightPwmValue * (1 + mConeLeftRightLocation));
-            leftDutyCycle = (int) (mLeftStraightPwmValue - Math.abs(mConeLeftRightLocation) * CONE_CAMERA_MULTIPLIER);
-        }else if(!mConeFound) {
-            leftDutyCycle = -150;
-            rightDutyCycle = 150;
+            leftDutyCycle = (int) (mLeftStraightPwmValue - Math.abs(mConeLeftRightLocation) * CONE_CAMERA_MULTIPLIER * 4);
+        } else if (!mConeFound && previousConeLocation <= 1) {
+            if (previousConeLocation < -0.1) {
+//            rightDutyCycle = (int)(mRightStraightPwmValue * (1 - mConeLeftRightLocation));
+                rightDutyCycle = (int) (mRightStraightPwmValue - Math.abs(previousConeLocation) * CONE_CAMERA_MULTIPLIER * 3);
+            } else if (previousConeLocation > 0.1) {
+//            leftDutyCycle = (int)(mLeftStraightPwmValue * (1 + mConeLeftRightLocation));
+                leftDutyCycle = (int) (mLeftStraightPwmValue - Math.abs(previousConeLocation) * CONE_CAMERA_MULTIPLIER * 3);
+            }
         } else {
-
+        }
+        if (mConeFound) {
+            previousConeLocation = mConeLeftRightLocation;
         }
         sendWheelSpeed(leftDutyCycle, rightDutyCycle);
     }
@@ -485,6 +545,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         double targetHeading = NavUtils.getTargetHeading(mGuessX, mGuessY, x, y);
         double leftTurnAmount = NavUtils.getLeftTurnHeadingDelta(mCurrentSensorHeading, targetHeading);
         double rightTurnAmount = NavUtils.getRightTurnHeadingDelta(mCurrentSensorHeading, targetHeading);
+//        double logicalHeading
         if (leftTurnAmount < rightTurnAmount) {
             leftDutyCycle = mLeftStraightPwmValue - (int) (leftTurnAmount * SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER);
             leftDutyCycle = Math.max(leftDutyCycle, LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE);
@@ -517,7 +578,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         super.onLocationChanged(x, y, heading, location);
         mFirebaseRef.child("gps").child("x").setValue((int) mCurrentGpsX);
         mFirebaseRef.child("gps").child("y").setValue((int) mCurrentGpsY);
-
+//        mCurrentGpsHeading = mCurrentSensorHeading;
         String gpsInfo = getString(R.string.xy_format, mCurrentGpsX, mCurrentGpsY);
         if (mCurrentGpsHeading != NO_HEADING) {
             gpsInfo += " " + getString(R.string.degrees_format, mCurrentGpsHeading);
@@ -627,8 +688,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      * Sends a message to Arduino to perform a ball color test.
      */
     public void handlePerformBallTest(View view) {
-//        Toast.makeText(this, "TODO: Implement handlePerformBallTest", Toast.LENGTH_SHORT).show();
-//        sendCommand("CUSTOM Do a ball test");
         sendCommand("ATTACH 111111");
         sendCommand("p");
 
@@ -755,7 +814,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             public void onClick(View v) {
                 mLeftStraightPwmValue = leftDutyCyclePicker.getValue();
                 mRightStraightPwmValue = rightDutyCyclePicker.getValue();
-//                Toast.makeText(GolfBallDeliveryActivity.this, "TODO: Implement the drive straight test", Toast.LENGTH_SHORT).show();
                 mScripts.testStraightScript();
             }
         });
@@ -785,8 +843,10 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             mJumboGoOrMissionCompleteButton.setBackgroundResource(R.drawable.red_button);
             mJumboGoOrMissionCompleteButton.setText("Stop!");
             sendCommand(home);
+            mStateCount = 0;
+            previousConeLocation = 10.0;
+//            onLocationChanged(15, 0, 0, null); // Midfield
 
-            // TODO: change this later for the actual match
             setState(State.NEAR_BALL_SCRIPT);
 //            setState(State.GPS_APPROACH);
         } else {
@@ -808,13 +868,15 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     // blue 90 -50
     // yellow 90 50
 
+    // TODO: new algorithm implemented
     private void updateMissionStrategyVariable() {
+        nearBallPositionCorrectionX = startPointCorrectionX + 90;
         for (int i = 0; i < 3; i++) {
             BallColor currentLocationsBallColor = mLocationColors[i];
             if (currentLocationsBallColor == BallColor.WHITE) {
                 mWhiteBallLocation = i + 1;
             }
-            if(mOnRedTeam) { // if red
+            if (mOnRedTeam) { // if red
                 if (currentLocationsBallColor == BallColor.BLUE) {
                     mFarBallLocation = i + 1;
                     mFarBallGpsY = 50;
@@ -825,17 +887,21 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 if (currentLocationsBallColor == BallColor.GREEN) {
                     mNearBallLocation = i + 1;
                     mNearBallGpsY = 50;
+                    nearBallPositionCorrectionY = startPointCorrectionY + 50;
                 } else if (currentLocationsBallColor == BallColor.RED) {
                     mNearBallLocation = i + 1;
                     mNearBallGpsY = -50;
+                    nearBallPositionCorrectionY = startPointCorrectionY - 50;
                 }
             } else {
                 if (currentLocationsBallColor == BallColor.BLUE) {
                     mNearBallLocation = i + 1;
                     mNearBallGpsY = -50;
+                    nearBallPositionCorrectionY = startPointCorrectionY - 50;
                 } else if (currentLocationsBallColor == BallColor.YELLOW) {
                     mNearBallLocation = i + 1;
                     mNearBallGpsY = 50;
+                    nearBallPositionCorrectionY = startPointCorrectionY + 50;
                 }
                 if (currentLocationsBallColor == BallColor.GREEN) {
                     mFarBallLocation = i + 1;
@@ -845,7 +911,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                     mFarBallGpsY = 50;
                 }
             }
-// TODO: In your project you’ll add more code to calculate the values below correctly!
         }
 
         Log.d(TAG, "Near ball position: " + mNearBallLocation + " drop off at y = " + mNearBallGpsY);
@@ -857,43 +922,35 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      * Test GPS point when going to the Far ball (assumes Blue Team heading to red ball).
      */
     public void handleFakeGpsF0(View view) {
-//        Toast.makeText(this, "TODO: Implement handleFakeGpsF0", Toast.LENGTH_SHORT).show();
-        onLocationChanged(165, 50, NO_HEADING, null); // Midfield
+        onLocationChanged(70, 30, NO_HEADING, null); // Midfield
     }
 
     public void handleFakeGpsF1(View view) {
-//        Toast.makeText(this, "TODO: Implement handleFakeGpsF1", Toast.LENGTH_SHORT).show();
         onLocationChanged(90, 50, 0, null); // Out of range so ignored
     }
 
     public void handleFakeGpsF2(View view) {
-//        Toast.makeText(this, "TODO: Implement handleFakeGpsF2", Toast.LENGTH_SHORT).show();
         onLocationChanged(90, -50, 135, null); // Within range
 //        sendMessage("hahahahaha I did not follow the course code");
     }
 
     public void handleFakeGpsF3(View view) {
-//        Toast.makeText(this, "TODO: Implement handleFakeGpsF3", Toast.LENGTH_SHORT).show();
         onLocationChanged(240, 41, 35, null); // Within range
     }
 
     public void handleFakeGpsH0(View view) {
-//        Toast.makeText(this, "TODO: Implement handleFakeGpsH0", Toast.LENGTH_SHORT).show();
-        onLocationChanged(240, 50, -179.9, null);
+        onLocationChanged(230, 30, -179.9, null);
     }
 
     public void handleFakeGpsH1(View view) {
-//        Toast.makeText(this, "TODO: Implement handleFakeGpsH1", Toast.LENGTH_SHORT).show();
         onLocationChanged(240, -50, -179.9, null);
     }
 
     public void handleFakeGpsH2(View view) {
-//        Toast.makeText(this, "TODO: Implement handleFakeGpsH2", Toast.LENGTH_SHORT).show();
-        onLocationChanged(9, 0, -170, null);
+        onLocationChanged(240, 50, -170, null);
     }
 
     public void handleFakeGpsH3(View view) {
-//        Toast.makeText(this, "TODO: Implement handleFakeGpsH3", Toast.LENGTH_SHORT).show();
-        onLocationChanged(0, 0, -170, null);
+        onLocationChanged(10, 10, -170, null);
     }
 }
