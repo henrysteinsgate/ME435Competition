@@ -24,8 +24,8 @@ import edu.rosehulman.me435.NavUtils;
 
 public class GolfBallDeliveryActivity extends ImageRecActivity {
 
-    private boolean gpsSmartControl = false;
-    private boolean headingDumbControl = true;
+    private boolean gpsSmartControl = true;
+    private boolean headingDumbControl = false;
     /**
      * Constant used with logging that you'll see later.
      */
@@ -162,17 +162,17 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     /**
      * Multiplier used during seeking to calculate a PWM value based on the turn amount needed.
      */
-    private static final double SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER = 5;  // units are (PWM value)/degrees
+    private static final double SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER = 10;  // units are (PWM value)/degrees
 
     /**
      * Variable used to cap the slowest PWM duty cycle used while seeking. Pick a value from -255 to 255.
      */
-    private static final int LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE = 80;
+    private static final int LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE = 140;
 
     /**
      * PWM duty cycle values used with the drive straight dialog that make your robot drive straightest.
      */
-    public int mLeftStraightPwmValue = 210, mRightStraightPwmValue = 220;
+    public int mLeftStraightPwmValue = 230, mRightStraightPwmValue = 235;
     // ------------------------ End of Driving area ------------------------------
 
     //------------------------- Start of Lab7Code ----------------------
@@ -185,11 +185,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
     static public String home = "POSITION 0 90 0 -90 90";
 
-    static public String oneTwo = "POSITION 21 130 -90 -160 108";
-    static public String oneOff = "POSITION 45 130 -90 -160 108";
-    static public String twoThree = "POSITION -8 130 -90 -160 108";
-    static public String twoOff = "POSITION 8 130 -90 -160 108";
-    static public String threeOff = "POSITION -28 130 -90 -160 108";
+    static public String oneTwo = "POSITION 21 128 -90 -160 108";
+    static public String oneOff = "POSITION 45 128 -90 -160 108";
+    static public String twoThree = "POSITION -8 128 -90 -160 108";
+    static public String twoOff = "POSITION 8 128 -90 -160 108";
+    static public String threeOff = "POSITION -28 128 -90 -160 108";
 
     static public String oneRecover = "POSITION 45 90 0 -90 90";
     static public String threeRecover = "POSITION -28 90 0 -90 90";
@@ -243,7 +243,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
 
         // When you start using the real hardware you don't need test buttons.
-        boolean hideFakeGpsButtons = false;
+        boolean hideFakeGpsButtons = true;
         if (hideFakeGpsButtons) {
             TableLayout fakeGpsButtonTable = (TableLayout) findViewById(R.id.fake_gps_button_table);
             fakeGpsButtonTable.setVisibility(View.GONE);
@@ -326,7 +326,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             case NEAR_BALL_SCRIPT:
                 mGpsInfoTextView.setText("---");
                 mGuessXYTextView.setText("---");
-//                mScripts.nearBallScript();
 
                 mViewFlipper.setDisplayedChild(2);
 
@@ -340,7 +339,16 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 nearBallPositionCorrectionX = (long) mGuessX;
                 nearBallPositionCorrectionY = (long) mGuessY;
                 farBallPositionCorrectionX = nearBallPositionCorrectionX + 150;
-                farBallPositionCorrectionY = nearBallPositionCorrectionY + 0;
+                if((mFarBallGpsY> 0 && mNearBallGpsY > 0) || (mFarBallGpsY< 0 && mNearBallGpsY < 0)) {
+                    farBallPositionCorrectionY = nearBallPositionCorrectionY + 0;
+                }
+                else{
+                    if( mNearBallGpsY > 0){
+                        farBallPositionCorrectionY = nearBallPositionCorrectionY - 100;
+                    }else if(mNearBallGpsY < 0){
+                        farBallPositionCorrectionY = nearBallPositionCorrectionY + 100;
+                    }
+                }
 
 //                FAR_BALL_GPS_X = FAR_BALL_GPS_X - (90 - (long) mNearBallXPositionCorrection);
 
@@ -447,6 +455,9 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 } else {
                     setState(State.CAMERA_APPROACH);
                 }
+                if(mGuessX > 120){
+                    setState(State.DROPBALL);
+                }
                 break;
             case FAR_BALL_SCRIPT:
 //                if (minDistance(farBallPositionCorrectionX, farBallPositionCorrectionY, mGuessX, mGuessY) < 30) {
@@ -454,21 +465,29 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 //                    mLeftStraightPwmValue = 200;
 //                    mRightStraightPwmValue = 200;
 //                }
-                if ((minDistance(farBallPositionCorrectionX, farBallPositionCorrectionY, mGuessX, mGuessY) > 10 && !mConeFound) || mGuessX < 160) {
+                if ((minDistance(farBallPositionCorrectionX, farBallPositionCorrectionY, mGuessX, mGuessY) > 10 && !mConeFound) || mGuessX < 180) {
 //                if ((minDistance(FAR_BALL_GPS_X, mFarBallGpsY, mGuessX, mGuessY) > 10 && !mConeFound) || mGuessX < 160) {
                     seekTargetAt(farBallPositionCorrectionX, farBallPositionCorrectionY, nearBallPositionCorrectionX, nearBallPositionCorrectionY);
 //                    seekTargetAt(FAR_BALL_GPS_X, mFarBallGpsY);
                 } else {
                     setState(State.CAMERA_APPROACH);
                 }
+                if(mGuessX > 260){
+                    setState(State.DROPBALL);
+                }
                 break;
             case DRIVE_TOWARDS_HOME:
-                if (minDistance(endPositionCorrectionX, endPositionCorrectionY, mGuessX, mGuessY) > 10 && !mConeFound || mGuessX > 20) {
+                if (minDistance(endPositionCorrectionX, endPositionCorrectionY, mGuessX, mGuessY) > 10 && !mConeFound || mGuessX > 25) {
 //                    if (minDistance(0, 0, mGuessX, mGuessY) > 10 && !mConeFound || mGuessX > 20) {
+                    gpsSmartControl = true;
+                    headingDumbControl = false;
                     seekTargetAt(endPositionCorrectionX, endPositionCorrectionY, farBallPositionCorrectionX, farBallPositionCorrectionY);
 //                    seekTargetAt(0, 0);
                 } else {
                     setState(State.CAMERA_APPROACH);
+                }
+                if(mGuessX < -5){
+                    setState(State.DROPBALL);
                 }
 
                 break;
@@ -868,6 +887,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             mStateCount = 0;
             readyForNextState = 0;
             previousConeLocation = 10.0;
+            gpsSmartControl = false;
+            headingDumbControl = true;
 //            onLocationChanged(15, 0, 0, null); // Midfield
 
             setState(State.NEAR_BALL_SCRIPT);
@@ -875,6 +896,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         } else {
             setState(State.READY_FOR_MISSION);
             mViewFlipper.setDisplayedChild(0);
+            gpsSmartControl = false;
+            headingDumbControl = true;
         }
 
     }

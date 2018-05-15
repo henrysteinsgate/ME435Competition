@@ -65,9 +65,6 @@ public class Scripts {
                 if (mActivity.mWhiteBallLocation != 0) {
                     removeBallAtLocation(mActivity.mWhiteBallLocation);
                 }
-                if (mActivity.mState == GolfBallDeliveryActivity.State.DROPBALL && mActivity.mStateCount == 2) {
-                    mActivity.setState(GolfBallDeliveryActivity.State.DRIVE_TOWARDS_HOME);
-                }
             }
         }, ARM_REMOVAL_TIME);
 
