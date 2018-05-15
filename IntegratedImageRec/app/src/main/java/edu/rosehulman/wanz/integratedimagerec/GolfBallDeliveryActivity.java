@@ -185,8 +185,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
     static public String home = "POSITION 0 90 0 -90 90";
 
-    static public String oneTwo = "POSITION 21 128 -90 -160 108";
-    static public String oneOff = "POSITION 45 128 -90 -160 108";
+    static public String oneTwo = "POSITION 21 125 -90 -160 108";
+    static public String oneOff = "POSITION 45 126 -90 -160 108";
     static public String twoThree = "POSITION -8 128 -90 -160 108";
     static public String twoOff = "POSITION 8 128 -90 -160 108";
     static public String threeOff = "POSITION -28 128 -90 -160 108";
@@ -477,10 +477,9 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 }
                 break;
             case DRIVE_TOWARDS_HOME:
-                if (minDistance(endPositionCorrectionX, endPositionCorrectionY, mGuessX, mGuessY) > 10 && !mConeFound || mGuessX > 25) {
+                readyForNextState = 0;
+                if ((minDistance(endPositionCorrectionX, endPositionCorrectionY, mGuessX, mGuessY) > 10 && !mConeFound) || mGuessX > 25) {
 //                    if (minDistance(0, 0, mGuessX, mGuessY) > 10 && !mConeFound || mGuessX > 20) {
-                    gpsSmartControl = true;
-                    headingDumbControl = false;
                     seekTargetAt(endPositionCorrectionX, endPositionCorrectionY, farBallPositionCorrectionX, farBallPositionCorrectionY);
 //                    seekTargetAt(0, 0);
                 } else {
@@ -508,6 +507,19 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                     seekConeWithCamera();
                 } else {
                     setState(State.DROPBALL);
+                }
+                if(mStateCount == 0){
+                    if(mGuessX > 100){
+                        setState(State.DROPBALL);
+                    }
+                } else if(mStateCount == 1){
+                    if(mGuessX > 260){
+                        setState(State.DROPBALL);
+                    }
+                } else if(mStateCount == 2){
+                    if(mGuessX < -15) {
+                        setState(State.DROPBALL);
+                    }
                 }
                 break;
             case DROPBALL:
@@ -887,8 +899,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             mStateCount = 0;
             readyForNextState = 0;
             previousConeLocation = 10.0;
-            gpsSmartControl = false;
-            headingDumbControl = true;
+//            gpsSmartControl = false;
+//            headingDumbControl = true;
 //            onLocationChanged(15, 0, 0, null); // Midfield
 
             setState(State.NEAR_BALL_SCRIPT);
@@ -896,8 +908,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         } else {
             setState(State.READY_FOR_MISSION);
             mViewFlipper.setDisplayedChild(0);
-            gpsSmartControl = false;
-            headingDumbControl = true;
+//            gpsSmartControl = false;
+//            headingDumbControl = true;
         }
 
     }
