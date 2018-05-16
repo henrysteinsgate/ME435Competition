@@ -383,7 +383,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                     mScripts.nearBallScript();
                 } else if (mStateCount == 2) {
                     mScripts.farBallScript();
-                } else if (mStateCount == 3) {
+                } else {
                     setState(State.WAITING_FOR_PICKUP);
                 }
                 break;
@@ -478,9 +478,9 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 break;
             case DRIVE_TOWARDS_HOME:
                 readyForNextState = 0;
-                if ((minDistance(endPositionCorrectionX, endPositionCorrectionY, mGuessX, mGuessY) > 10 && !mConeFound) || mGuessX > 25) {
+                if ((minDistance(0, 0, mGuessX, mGuessY) > 10 && !mConeFound) || mGuessX > 25) {
 //                    if (minDistance(0, 0, mGuessX, mGuessY) > 10 && !mConeFound || mGuessX > 20) {
-                    seekTargetAt(endPositionCorrectionX, endPositionCorrectionY, farBallPositionCorrectionX, farBallPositionCorrectionY);
+                    seekTargetAt(0, 0, farBallPositionCorrectionX, farBallPositionCorrectionY);
 //                    seekTargetAt(0, 0);
                 } else {
                     setState(State.CAMERA_APPROACH);
@@ -491,13 +491,22 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
                 break;
             case WAITING_FOR_PICKUP:
-                if (getStateTimeMs() > 8000) {
+                if (getStateTimeMs() > 6000) {
                     setState(State.SEEKING_HOME);
                 }
                 break;
             case SEEKING_HOME:
-                if (getStateTimeMs() > 8000) {
+                if (getStateTimeMs() > 6000) {
                     setState(State.WAITING_FOR_PICKUP);
+                }
+
+                if(mGuessY < 0){
+                    sendWheelSpeed(250,LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE);
+                } else if(mGuessY > 0){
+                    sendWheelSpeed(LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE,250);
+                }
+                if(mConeFound){
+                    setState(State.CAMERA_APPROACH);
                 }
                 break;
             case GPS_APPROACH:
@@ -517,7 +526,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                         setState(State.DROPBALL);
                     }
                 } else if(mStateCount == 2){
-                    if(mGuessX < -15) {
+                    if(mGuessX < -5) {
                         setState(State.DROPBALL);
                     }
                 }
